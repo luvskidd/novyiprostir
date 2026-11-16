@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-accent: #B8502B;
+    --color-accent-hover: #9A3E20;
+    --color-accent-text: #9A3E20;
+    --color-dark-bg: #161616;
+    --color-dark-card: #222222;
+    --color-light-muted: #B5B5B5;
+    --color-main-bg: #F5F5F5;
+    --color-main-text: #111111;
+
+    --font-sans: "Inter", system-ui, sans-serif;
+    --font-heading: "Raleway", sans-serif;
+    --font-hero: "Playfair Display", Georgia, serif;
+
+    --container-container: 1400px;
+
+    --animate-fade-in-up: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    --animate-fade-in-down: fadeInDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
