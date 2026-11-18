@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const TARGET_EMAIL = 'zelinskydenus@gmail.com';
+
     // Чистий URL без #hash при кліку на якірні посилання
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', (e) => {
@@ -384,8 +386,8 @@ $${data.totalUsd.toLocaleString('uk-UA')} USD  (~ ${data.totalUah.toLocaleString
 ==================================================
 
 Контакти бюро «Новий простір»:
-Телефон: +38 (067) 000-00-00
-Email: hello@novyprostir.ua
+Телефон: +38 (067) 342-89-15
+Email: ${TARGET_EMAIL}
 Адреса: м. Львів, вул. Архітекторів, 12
 `;
 
@@ -547,7 +549,9 @@ Email: hello@novyprostir.ua
     if (agreementCheckbox) agreementCheckbox.addEventListener('change', validateAgreement);
 
     if (form) {
-        form.addEventListener('submit', (e) => {
+        const submitFormBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const isNameValid = validateName();
@@ -556,23 +560,68 @@ Email: hello@novyprostir.ua
             const isMessageValid = validateMessage();
             const isAgreementValid = validateAgreement();
 
-            if (isNameValid && isEmailValid && isPhoneValid && isMessageValid && isAgreementValid) {
-                if (summaryName) summaryName.textContent = nameInput.value.trim();
-                if (summaryEmail) summaryEmail.textContent = emailInput.value.trim();
-                if (summaryPhone) summaryPhone.textContent = phoneInput.value.trim();
-                if (summarySubject) summarySubject.textContent = subjectSelect ? subjectSelect.value : '';
-
-                openModal();
-                form.reset();
-                if (phoneInput) phoneInput.value = '+380';
-                if (charCounter) charCounter.textContent = '0 / 500 символів';
-
-                [nameInput, emailInput, phoneInput, messageInput].forEach(el => {
-                    if (el) {
-                        el.classList.remove('border-emerald-500', 'border-red-500', 'focus:border-emerald-500', 'focus:border-red-500');
-                    }
-                });
+            if (!isNameValid || !isEmailValid || !isPhoneValid || !isMessageValid || !isAgreementValid) {
+                return;
             }
+
+            const payload = {
+                name: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                subject: subjectSelect ? subjectSelect.value : 'Заявка з сайту',
+                message: messageInput.value.trim(),
+                _subject: `Нова заявка: ${subjectSelect ? subjectSelect.value : 'Новий простір'}`,
+                _template: 'table'
+            };
+
+            const originalBtnHtml = submitFormBtn ? submitFormBtn.innerHTML : '';
+            if (submitFormBtn) {
+                submitFormBtn.disabled = true;
+                submitFormBtn.classList.add('opacity-75', 'pointer-events-none');
+                submitFormBtn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs" aria-hidden="true"></i> <span>Надсилаємо...</span>';
+            }
+
+            try {
+                const response = await fetch(`https://formsubmit.co/ajax/${TARGET_EMAIL}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Помилка відправки на поштовий сервіс');
+                }
+            } catch {
+                const mailBody = encodeURIComponent(
+                    `ПІБ: ${payload.name}\nEmail: ${payload.email}\nТелефон: ${payload.phone}\nТема: ${payload.subject}\n\nПовідомлення:\n${payload.message}`
+                );
+                window.location.href = `mailto:${TARGET_EMAIL}?subject=${encodeURIComponent(payload._subject)}&body=${mailBody}`;
+            } finally {
+                if (submitFormBtn) {
+                    submitFormBtn.disabled = false;
+                    submitFormBtn.classList.remove('opacity-75', 'pointer-events-none');
+                    submitFormBtn.innerHTML = originalBtnHtml;
+                }
+            }
+
+            if (summaryName) summaryName.textContent = payload.name;
+            if (summaryEmail) summaryEmail.textContent = payload.email;
+            if (summaryPhone) summaryPhone.textContent = payload.phone;
+            if (summarySubject) summarySubject.textContent = payload.subject;
+
+            openModal();
+            form.reset();
+            if (phoneInput) phoneInput.value = '+380';
+            if (charCounter) charCounter.textContent = '0 / 500 символів';
+
+            [nameInput, emailInput, phoneInput, messageInput].forEach(el => {
+                if (el) {
+                    el.classList.remove('border-emerald-500', 'border-red-500', 'focus:border-emerald-500', 'focus:border-red-500');
+                }
+            });
         });
     }
 
@@ -825,27 +874,106 @@ Email: hello@novyprostir.ua
         }
     });
 
-    // Слайдер До / Після
+    // Слайдер До / Після з перемикачем об'єктів
     const range = document.getElementById('comparison-range');
     const beforeWrapper = document.getElementById('before-wrapper');
     const beforeImg = document.getElementById('before-img');
+    const afterImg = document.getElementById('after-img');
     const handle = document.getElementById('slider-handle');
     const sliderContainer = document.getElementById('before-after-slider');
     const badgeBefore = document.getElementById('badge-before');
     const badgeAfter = document.getElementById('badge-after');
+    const switchOverlay = document.getElementById('ba-switch-overlay');
+    const baTabBtns = document.querySelectorAll('[data-ba-tab]');
+    const baMainCaption = document.getElementById('ba-main-caption');
+
+    const baProjects = [
+        {
+            before: 'assets/images/before.jpg',
+            after: 'assets/images/after.jpg',
+            beforeBadge: 'ДО РЕМОНТУ',
+            afterBadge: 'ПІСЛЯ РЕВІТАЛІЗАЦІЇ',
+            caption: 'Ревіталізація промислового простору • 140 м² • Мінімалізм'
+        },
+        {
+            before: 'assets/images/before-2.jpg',
+            after: 'assets/images/after-2.jpg',
+            beforeBadge: 'ДО РЕМОНТУ',
+            afterBadge: 'ПІСЛЯ РЕВІТАЛІЗАЦІЇ',
+            caption: 'Апартаменти в історичному будинку Львова • 95 м² • Джапанді'
+        }
+    ];
+
+    let activeBaIndex = 0;
 
     if (range && beforeWrapper && handle && sliderContainer && beforeImg) {
         function updateSlider() {
-            const val = range.value;
+            const val = Number(range.value);
             beforeWrapper.style.width = `${val}%`;
             handle.style.left = `${val}%`;
             beforeImg.style.width = `${sliderContainer.offsetWidth}px`;
             if (badgeBefore) badgeBefore.style.opacity = val < 5 ? '0' : '1';
             if (badgeAfter) badgeAfter.style.opacity = val > 95 ? '0' : '1';
         }
+
         range.addEventListener('input', updateSlider);
         window.addEventListener('resize', updateSlider);
         updateSlider();
+
+        baTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = Number(btn.getAttribute('data-ba-tab'));
+                if (idx === activeBaIndex) return;
+                const project = baProjects[idx];
+                if (!project) return;
+                activeBaIndex = idx;
+
+                baTabBtns.forEach(b => {
+                    const isActive = b === btn;
+                    b.setAttribute('aria-selected', String(isActive));
+                    if (isActive) {
+                        b.classList.add('bg-[#B8502B]', 'text-white', 'shadow-sm');
+                        b.classList.remove('text-gray-700', 'dark:text-gray-300');
+                    } else {
+                        b.classList.remove('bg-[#B8502B]', 'text-white', 'shadow-sm');
+                        b.classList.add('text-gray-700', 'dark:text-gray-300');
+                    }
+                });
+
+                if (switchOverlay) {
+                    switchOverlay.classList.remove('opacity-0');
+                    switchOverlay.classList.add('opacity-100');
+                }
+
+                const preloadImg = (src, fallback) => new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = () => resolve(src);
+                    img.onerror = () => resolve(fallback);
+                    img.src = src;
+                });
+
+                Promise.all([
+                    preloadImg(project.before, 'assets/images/before.jpg'),
+                    preloadImg(project.after, 'assets/images/after.jpg'),
+                    new Promise(r => setTimeout(r, 180))
+                ]).then(([resolvedBefore, resolvedAfter]) => {
+                    beforeImg.src = resolvedBefore;
+                    if (afterImg) afterImg.src = resolvedAfter;
+
+                    if (badgeBefore) badgeBefore.textContent = project.beforeBadge;
+                    if (badgeAfter) badgeAfter.textContent = project.afterBadge;
+                    if (baMainCaption) baMainCaption.textContent = project.caption;
+
+                    range.value = '50';
+                    updateSlider();
+
+                    if (switchOverlay) {
+                        switchOverlay.classList.remove('opacity-100');
+                        switchOverlay.classList.add('opacity-0');
+                    }
+                });
+            });
+        });
     }
 
     if (typeof Fancybox !== 'undefined') {

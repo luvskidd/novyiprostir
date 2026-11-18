@@ -230,11 +230,27 @@
             <div class="max-w-container mx-auto px-5 md:px-[32px]">
                 <span class="inline-block text-xs font-bold text-accent-text dark:text-accent uppercase tracking-widest mb-2">Трансформація та галерея</span>
                 <h2 class="font-heading text-2xl md:text-4xl font-bold mb-2 text-main-text dark:text-white">Подивіться, як оживають занедбані простори</h2>
-                <p class="text-gray-600 dark:text-gray-300 text-sm md:text-base max-w-[680px] mb-8">Перетягуйте слайдер для порівняння приміщення до і після роботи бюро, або переглядайте наші реалізовані об'єкти у фотогалереї.</p>
+                <p class="text-gray-600 dark:text-gray-300 text-sm md:text-base max-w-[680px] mb-6">Оберіть об'єкт та перетягуйте слайдер для порівняння приміщення до і після роботи бюро, або переглядайте реалізовані проєкти у фотогалереї.</p>
 
+                <!-- Вкладки перемикання об'єктів -->
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                    <div class="inline-flex flex-wrap gap-1.5 bg-white dark:bg-[#1e1e1e] p-1.5 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm" role="tablist" aria-label="Вибір об'єкта порівняння">
+                        <button type="button" role="tab" aria-selected="true" data-ba-tab="0" class="ba-tab-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-bold cursor-pointer bg-[#B8502B] text-white shadow-sm">
+                            Об'єкт 01 • Ревіталізація простору
+                        </button>
+                        <button type="button" role="tab" aria-selected="false" data-ba-tab="1" class="ba-tab-btn px-4 py-2 rounded-lg text-xs sm:text-sm font-bold cursor-pointer text-gray-700 dark:text-gray-300 hover:text-main-text dark:hover:text-white">
+                            Об'єкт 02 • Апартаменти у Львові
+                        </button>
+                    </div>
+                    <p id="ba-main-caption" class="text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-300">
+                        Ревіталізація промислового простору • 140 м² • Мінімалізм
+                    </p>
+                </div>
+
+                <!-- Головний великий слайдер -->
                 <div class="mb-12">
-                    <div id="before-after-slider" class="relative w-full h-[360px] sm:h-[460px] md:h-[540px] rounded-2xl overflow-hidden select-none border border-gray-200 dark:border-gray-800 shadow-lg group">
-                        <img src="assets/images/after.jpg" alt="Інтер'єр приміщення після ревіталізації" width="1200" height="800" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-center">
+                    <div id="before-after-slider" class="relative w-full h-[360px] sm:h-[460px] md:h-[540px] rounded-2xl overflow-hidden select-none border border-gray-200 dark:border-gray-800 shadow-lg group bg-black">
+                        <img id="after-img" src="assets/images/after.jpg" alt="Інтер'єр приміщення після ревіталізації" width="1200" height="800" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover object-center">
                         <span id="badge-after" class="absolute top-3.5 right-3.5 sm:top-auto sm:bottom-5 sm:right-5 bg-[#B8502B] text-white text-[10px] sm:text-xs font-bold px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-md tracking-wider z-10 pointer-events-none shadow-md transition-opacity duration-200 whitespace-nowrap">ПІСЛЯ РЕВІТАЛІЗАЦІЇ</span>
 
                         <div id="before-wrapper" class="absolute inset-0 w-1/2 overflow-hidden border-r-2 border-white shadow-[3px_0_15px_rgba(0,0,0,0.4)]">
@@ -249,9 +265,13 @@
                                 <i class="fas fa-arrows-alt-h text-sm" aria-hidden="true"></i>
                             </div>
                         </div>
+
+                        <!-- Оверлей для плавного перемикання без просвічування шарів -->
+                        <div id="ba-switch-overlay" class="absolute inset-0 bg-black opacity-0 pointer-events-none z-25 transition-opacity duration-200"></div>
                     </div>
                 </div>
 
+                <!-- Фотогалерея -->
                 <div class="mb-10">
                     <h3 class="font-heading text-xl md:text-2xl font-bold mb-6 text-main-text dark:text-white">Галерея реалізованих об'єктів</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -759,13 +779,13 @@
                 <span class="font-heading text-lg font-bold text-white block mb-2">НОВИЙ ПРОСТІР</span>
                 <p class="text-xs md:text-sm text-light-muted mb-4">Архітектурне бюро повного циклу: від ескізу до реалізації.</p>
                 <div class="flex items-center gap-3">
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="w-12 h-12 rounded-full bg-white/10 hover:bg-[#B8502B] hover:scale-110 transition-all flex items-center justify-center text-sm text-white focus:outline-none">
+                    <a href="https://www.instagram.com/novyprostir.arch/" target="_blank" rel="noopener noreferrer" aria-label="Instagram архітектурного бюро Новий простір" class="w-12 h-12 rounded-full bg-white/10 hover:bg-[#B8502B] hover:scale-110 transition-all flex items-center justify-center text-sm text-white focus:outline-none">
                         <i class="fab fa-instagram" aria-hidden="true"></i>
                     </a>
-                    <a href="https://t.me" target="_blank" rel="noopener noreferrer" aria-label="Telegram" class="w-12 h-12 rounded-full bg-white/10 hover:bg-[#B8502B] hover:scale-110 transition-all flex items-center justify-center text-sm text-white focus:outline-none">
+                    <a href="https://t.me/novyprostir_lviv" target="_blank" rel="noopener noreferrer" aria-label="Telegram архітектурного бюро Новий простір" class="w-12 h-12 rounded-full bg-white/10 hover:bg-[#B8502B] hover:scale-110 transition-all flex items-center justify-center text-sm text-white focus:outline-none">
                         <i class="fab fa-telegram-plane" aria-hidden="true"></i>
                     </a>
-                    <a href="https://behance.net" target="_blank" rel="noopener noreferrer" aria-label="Behance" class="w-12 h-12 rounded-full bg-white/10 hover:bg-[#B8502B] hover:scale-110 transition-all flex items-center justify-center text-sm text-white focus:outline-none">
+                    <a href="https://www.behance.net/novyprostir" target="_blank" rel="noopener noreferrer" aria-label="Behance портфоліо Новий простір" class="w-12 h-12 rounded-full bg-white/10 hover:bg-[#B8502B] hover:scale-110 transition-all flex items-center justify-center text-sm text-white focus:outline-none">
                         <i class="fab fa-behance" aria-hidden="true"></i>
                     </a>
                 </div>
@@ -795,8 +815,8 @@
                 <h3 class="font-heading text-base font-bold text-white mb-3">Контакти</h3>
                 <address class="not-italic text-xs md:text-sm text-light-muted leading-relaxed">
                     м. Львів, вул. Архітекторів, 12<br>
-                    <a href="tel:+380670000000" class="inline-block py-1 hover:text-white transition-colors">+38 (067) 000-00-00</a><br>
-                    <a href="mailto:hello@novyprostir.ua" class="inline-block py-1 hover:text-white transition-colors">hello@novyprostir.ua</a>
+                    <a href="tel:+380673428915" class="inline-block py-1 hover:text-white transition-colors">+38 (067) 342-89-15</a><br>
+                    <a href="mailto:zelinskydenus@gmail.com" class="inline-block py-1 hover:text-white transition-colors">zelinskydenus@gmail.com</a>
                 </address>
             </div>
         </div>
